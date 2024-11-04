@@ -1,4 +1,4 @@
-name: Terraform
+name: IaC
 
 on:
   push:
@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
-    name: Terraform
+  iac:
+    name: IaC
     runs-on: ubuntu-latest
     environment: production
 
