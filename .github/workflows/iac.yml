@@ -1,12 +1,8 @@
 name: IaC
 
 on:
-  push:
-    branches:
-      - iac
-  pull_request:
   workflow_run:
-    workflows: ["tfsec"]
+    workflows: ["linters", "checkers"]
     types:
       - completed
 
@@ -14,16 +10,6 @@ permissions:
   contents: read
 
 jobs:
-  # ansible-lint:
-  #   name: Ansible Lint
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Run ansible-lint
-  #       uses: ansible/ansible-lint@main
-  #       with:
-  #         working_directory: ./ansible
-
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
