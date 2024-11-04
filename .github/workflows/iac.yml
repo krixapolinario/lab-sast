@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  iac:
-    name: IaC
+  terraform:
+    name: Terraform
     runs-on: ubuntu-latest
     environment: production
 
@@ -34,8 +34,6 @@ jobs:
         echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible.pub
         chmod 700 /home/runner/.ssh/ecdsa_ansible
         chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
-        ls -la /home/runner/.ssh/
-        cat /home/runner/.ssh/ecdsa_ansible.pub
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -64,9 +62,22 @@ jobs:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
+  ansible:
+    name: Ansible
+    runs-on: ubuntu-latest
+    environment: production
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./ansible
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
     - name: Run Ansible Playbook 
       shell: bash
-      working-directory: ./ansible
       env:
         ANSIBLE_HOST_KEY_CHECKING: False
       run: |
@@ -74,6 +85,5 @@ jobs:
         ls -la
         cat ./inventory.yml
         echo $ANSIBLE_HOST_KEY_CHECKING
-        cat /home/runner/.ssh/ecdsa_ansible.pub
-    #     sleep 120
-    #     ansible-playbook -v -i ./inventory.yml main.yml
+        sleep 120
+        ansible-playbook -v -i ./inventory.yml main.yml
