@@ -37,8 +37,3 @@ variable "ssh_private_key_path_ansible_user" {
   description = "Path SSH Key for Ansible User"
   type        = string
 }
-
-variable "bucket_tfsatefile_name" {
-  description = "Name of the Bucket to save Statefile"
-  type        = string
-}
