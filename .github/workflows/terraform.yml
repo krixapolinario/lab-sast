@@ -43,6 +43,12 @@ jobs:
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+    
+    - name: Terraform Validate
+      run: terraform validate
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
     - name: Terraform Plan
       run: terraform plan -input=false
@@ -51,6 +57,20 @@ jobs:
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
     - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+
+    - name: Setup SSH 
+      shell: bash
+      run: |
+        pwd
+        ls -la
+        cat ./inventory.yml
+        sleep 60
+    
+    - name: Terraform Destroy
       run: terraform destroy -auto-approve -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
