@@ -1,0 +1,57 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - iac
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    environment: production
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup SSH 
+      shell: bash
+      run: |
+        eval `ssh-agent -s`
+        mkdir -p /home/runner/.ssh/
+        touch /home/runner/.ssh/ecdsa_ansible /home/runner/.ssh/ecdsa_ansible.pub
+        echo -e "${{secrets.ANSIBLE_SSH}}" > /home/runner/.ssh/ecdsa_ansible
+        echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible
+        chmod 700 /home/runner/.ssh/ecdsa_ansible
+        chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+
+    - name: Terraform Plan
+      run: terraform plan -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
