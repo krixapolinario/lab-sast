@@ -51,7 +51,7 @@ jobs:
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
     - name: Terraform Apply
-      run: terraform apply -auto-approve -input=false
+      run: terraform destroy -auto-approve -input=false
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
