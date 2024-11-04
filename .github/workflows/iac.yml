@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name : Check out Git Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run Tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
 
