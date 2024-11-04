@@ -71,6 +71,5 @@ jobs:
         pwd
         ls -la
         cat ./inventory.yml
-        sleep 120
         echo $ANSIBLE_HOST_KEY_CHECKING
-        ansible-playbook -v -i ./inventory.yml main.yml
+        sleep 120
