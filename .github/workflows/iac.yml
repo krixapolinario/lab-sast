@@ -34,6 +34,8 @@ jobs:
         echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible
         chmod 700 /home/runner/.ssh/ecdsa_ansible
         chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
+        ls -la /home/runner/.ssh/
+        cat /home/runner/.ssh/ecdsa_ansible.pub
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -72,4 +74,5 @@ jobs:
         ls -la
         cat ./inventory.yml
         echo $ANSIBLE_HOST_KEY_CHECKING
-        sleep 120
+        cat /home/runner/.ssh/ecdsa_ansible.pub
+        
