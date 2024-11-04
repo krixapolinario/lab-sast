@@ -16,14 +16,13 @@
     name:
       - ca-certificates
       - curl
-      # - python3-docker
       - python3-jsondiff
     state: present
 
-# This is an approch because the package on Ubuntu is using a old version 
+# This is an approch because the package on Ubuntu is using a old version
 - name: Download and Install Package Docker 7.1.0
   block:
-    - name: Get Docker 
+    - name: Get Docker
       ansible.builtin.get_url:
         url: https://files.pythonhosted.org/packages/91/9b/4a2ea29aeba62471211598dac5d96825bb49348fa07e906ea930394a83ce/docker-7.1.0.tar.gz
         dest: /tmp/docker-7.1.0.tar.gz
@@ -36,7 +35,7 @@
   block:
     - name: Get GPG
       ansible.builtin.get_url:
-        url: https://download.docker.com/linux/ubuntu/gpg 
+        url: https://download.docker.com/linux/ubuntu/gpg
         dest: /etc/apt/keyrings/docker.asc
         validate_certs: False
 

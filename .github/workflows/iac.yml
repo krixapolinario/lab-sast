@@ -12,15 +12,13 @@ jobs:
   ansible-lint:
     name: Ansible Lint
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./ansible
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main
+        with:
+          working_directory: ./ansible
   
   terraform-lint:
     name: Terraform Lint
@@ -44,6 +42,7 @@ jobs:
         run: tflint -f compact
 
   terraform-sec:
+    name: Terraform Security
     runs-on: ubuntu-latest
     steps:
       - name : Check out Git Repository
