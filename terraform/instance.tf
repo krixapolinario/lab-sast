@@ -27,8 +27,8 @@ resource "google_compute_instance" "lab-sast" {
 
 }
 
-resource "github_actions_variable" "lab_sast_nat_ip" {
-  repository       = "LAB_SAST_NAT_IP"
-  variable_name    = "LAB_SAST_NAT_IP"
-  value            = "${google_compute_instance.lab-sast.network_interface.0.access_config.0.nat_ip}"
-}
+# resource "github_actions_variable" "lab_sast_nat_ip" {
+#   repository       = "LAB_SAST_NAT_IP"
+#   variable_name    = "LAB_SAST_NAT_IP"
+#   value            = "${google_compute_instance.lab-sast.network_interface.0.access_config.0.nat_ip}"
+# }
