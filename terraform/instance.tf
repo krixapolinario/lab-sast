@@ -4,7 +4,6 @@ resource "google_compute_instance" "lab-sast" {
   machine_type              = var.google_instance_type
   allow_stopping_for_update = true
   zone                      = var.google_zone
-  
   metadata = {
     ssh-keys = "ansible:${file(var.ssh_key_pub)}"
   }
@@ -24,10 +23,6 @@ resource "google_compute_instance" "lab-sast" {
 
   provisioner "local-exec" {
     command = "echo 'lab-sast ansible_port=22 ansible_host=${self.network_interface.0.access_config.0.nat_ip} ansible_user=ansible ansible_ssh_private_key_file=${var.ssh_key_priv}' >> ../ansible/inventory.yml"
-  }
-
-  provisioner "local-exec" {
-    command = "cat ansible_ssh_private_key_file=${var.ssh_key_priv}"
   }
 
 }
