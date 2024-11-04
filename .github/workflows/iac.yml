@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  INSTANCE_LAB_SAST_IP: ''
+
 jobs:
   terraform:
     name: Terraform
@@ -62,20 +65,20 @@ jobs:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
-  ansible:
-    name: Ansible
-    runs-on: ubuntu-latest
-    environment: production
+  # ansible:
+  #   name: Ansible
+  #   runs-on: ubuntu-latest
+  #   environment: production
 
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./ansible
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #       working-directory: ./ansible
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v4
+
     - name: Run Ansible Playbook 
       shell: bash
       env:
