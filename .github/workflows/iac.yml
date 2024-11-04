@@ -1,29 +1,71 @@
 name: IaC
 
 on:
-  workflow_run:
-    workflows: ["linters", "checkers"]
-    types:
-      - completed
+  push:
+    branches:
+      - iac
 
 permissions:
   contents: read
 
 jobs:
-  terraform:
-    name: Terraform
+  ansible-lint:
+    name: Ansible Lint
     runs-on: ubuntu-latest
-    environment: production
-
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./ansible
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+  
+  terraform-lint:
+    name: Terraform Lint
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
         working-directory: ./terraform
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.52.0
+      - name: Show version
+        run: tflint --version
+      - name: Init TFLint
+        run: tflint --init
+      - name: Run TFLint
+        run: tflint -f compact
 
+  terraform-sec:
+    runs-on: ubuntu-latest
+    steps:
+      - name : Check out Git Repository
+        uses: actions/checkout@v2
+      - name: Run Tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    environment: production
+    needs: 
+      - ansible-lint
+      - terraform-lint
+      - terraform-sec
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-
     - name: Setup SSH 
       shell: bash
       run: |

@@ -1,43 +1,43 @@
-name: linters
+# name: linters
 
-on:
-  push:
-    branches:
-      - iac
+# on:
+#   push:
+#     branches:
+#       - iac
 
-permissions: read-all
+# permissions: read-all
 
-jobs:
-  ansible-lint:
-    name: Ansible Lint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./ansible
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint@main
+# jobs:
+#   ansible-lint:
+#     name: Ansible Lint
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         shell: bash
+#         working-directory: ./ansible
+#     steps:
+#       - name: Checkout source code
+#         uses: actions/checkout@v4
+#       - name: Run ansible-lint
+#         uses: ansible/ansible-lint@main
   
-  tflint:
-    name: Terraform Lint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./terraform
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v4
-        with:
-          tflint_version: v0.52.0
-      - name: Show version
-        run: tflint --version
-      - name: Init TFLint
-        run: tflint --init
-      - name: Run TFLint
-        run: tflint -f compact
+#   tflint:
+#     name: Terraform Lint
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         shell: bash
+#         working-directory: ./terraform
+#     steps:
+#       - name: Checkout source code
+#         uses: actions/checkout@v4
+#       - name: Setup TFLint
+#         uses: terraform-linters/setup-tflint@v4
+#         with:
+#           tflint_version: v0.52.0
+#       - name: Show version
+#         run: tflint --version
+#       - name: Init TFLint
+#         run: tflint --init
+#       - name: Run TFLint
+#         run: tflint -f compact
