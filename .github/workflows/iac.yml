@@ -64,16 +64,16 @@ jobs:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
-    - name: Run Ansible Playbook 
-      shell: bash
-      working-directory: ./ansible
-      env:
-        ANSIBLE_HOST_KEY_CHECKING: False
-      run: |
-        pwd
-        ls -la
-        cat ./inventory.yml
-        echo $ANSIBLE_HOST_KEY_CHECKING
-        cat /home/runner/.ssh/ecdsa_ansible.pub
-        sleep 120
-        ansible-playbook -v -i ./inventory.yml main.yml
+    # - name: Run Ansible Playbook 
+    #   shell: bash
+    #   working-directory: ./ansible
+    #   env:
+    #     ANSIBLE_HOST_KEY_CHECKING: False
+    #   run: |
+    #     pwd
+    #     ls -la
+    #     cat ./inventory.yml
+    #     echo $ANSIBLE_HOST_KEY_CHECKING
+    #     cat /home/runner/.ssh/ecdsa_ansible.pub
+    #     sleep 120
+    #     ansible-playbook -v -i ./inventory.yml main.yml
