@@ -65,9 +65,12 @@ jobs:
     - name: Run Ansible Playbook 
       shell: bash
       working-directory: ./ansible
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: False
       run: |
         pwd
         ls -la
         cat ./inventory.yml
         sleep 120
-        ansible-playbook -vvv --private-key /home/runner/.ssh/ecdsa_ansible -u ansible -i ./inventory.yml main.yml
+        echo $ANSIBLE_HOST_KEY_CHECKING
+        ansible-playbook -v -i ./inventory.yml main.yml
