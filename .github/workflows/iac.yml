@@ -1,89 +1,96 @@
-# name: IaC
+name: IaC
 
-# on:
-#   push:
-#     branches:
-#       - iac
-#   pull_request:
+on:
+  push:
+    branches:
+      - iac
+  pull_request:
 
-# permissions:
-#   contents: read
+permissions:
+  contents: read
 
-# env:
-#   INSTANCE_LAB_SAST_IP: ''
+jobs:
+  ansible-lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+        with:
+          working_directory: ./ansible
 
-# jobs:
-#   terraform:
-#     name: Terraform
-#     runs-on: ubuntu-latest
-#     environment: production
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    environment: production
 
-#     defaults:
-#       run:
-#         shell: bash
-#         working-directory: ./terraform
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
 
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v4
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
-#     - name: Setup SSH 
-#       shell: bash
-#       run: |
-#         eval `ssh-agent -s`
-#         mkdir -p /home/runner/.ssh/
-#         touch /home/runner/.ssh/ecdsa_ansible /home/runner/.ssh/ecdsa_ansible.pub
-#         echo -e "${{secrets.ANSIBLE_SSH}}" > /home/runner/.ssh/ecdsa_ansible
-#         echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible.pub
-#         chmod 700 /home/runner/.ssh/ecdsa_ansible
-#         chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
+    - name: Setup SSH 
+      shell: bash
+      run: |
+        eval `ssh-agent -s`
+        mkdir -p /home/runner/.ssh/
+        touch /home/runner/.ssh/ecdsa_ansible /home/runner/.ssh/ecdsa_ansible.pub
+        echo -e "${{secrets.ANSIBLE_SSH}}" > /home/runner/.ssh/ecdsa_ansible
+        echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible.pub
+        chmod 700 /home/runner/.ssh/ecdsa_ansible
+        chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
 
-#     - name: Setup Terraform
-#       uses: hashicorp/setup-terraform@v3
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
 
-#     - name: Terraform Init
-#       run: terraform init
-#       env:
-#         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-#         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
     
-#     - name: Terraform Validate
-#       run: terraform validate
-#       env:
-#         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-#         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+    - name: Terraform Validate
+      run: terraform validate
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
-#     - name: Terraform Plan
-#       run: terraform plan -input=false
-#       env:
-#         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-#         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+    - name: Terraform Plan
+      run: terraform plan -input=false
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
-#     - name: Terraform Apply
-#       run: terraform apply -auto-approve -input=false
-#       env:
-#         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-#         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+  #   - name: Terraform Apply
+  #     run: terraform apply -auto-approve -input=false
+  #     env:
+  #       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+  #       TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
-#   # ansible:
-#   #   name: Ansible
-#   #   runs-on: ubuntu-latest
-#   #   environment: production
+  # # ansible:
+  # #   name: Ansible
+  # #   runs-on: ubuntu-latest
+  # #   environment: production
 
-#   #   defaults:
-#   #     run:
-#   #       shell: bash
-#   #       working-directory: ./ansible
+  # #   defaults:
+  # #     run:
+  # #       shell: bash
+  # #       working-directory: ./ansible
 
-#   #   steps:
-#   #   - name: Checkout
-#   #     uses: actions/checkout@v4
+  # #   steps:
+  # #   - name: Checkout
+  # #     uses: actions/checkout@v4
 
-#     - name: Run Ansible Playbook 
-#       shell: bash
-#       working-directory: ./ansible
-#       env:
-#         ANSIBLE_HOST_KEY_CHECKING: False
-#       run: |
-#         sleep 120
-#         ansible-playbook -vvv -i ./inventory.yml main.yml
+  #   - name: Run Ansible Playbook 
+  #     shell: bash
+  #     working-directory: ./ansible
+  #     env:
+  #       ANSIBLE_HOST_KEY_CHECKING: False
+  #     run: |
+  #       sleep 120
+  #       ansible-playbook -vvv -i ./inventory.yml main.yml
