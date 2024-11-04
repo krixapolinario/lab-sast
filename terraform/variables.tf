@@ -28,12 +28,8 @@ variable "google_network" {
   type        = string
 }
 
-variable "ssh_key_path_ansible_user" {
-  description = "Path SSH Key for Default User"
-  type        = string
-}
-
-variable "ssh_private_key_path_ansible_user" {
+variable "ssh_key_pub" {
   description = "Path SSH Key for Ansible User"
   type        = string
+  default     = "/home/runner/.ssh/ecdsa_ansible.pub"
 }

@@ -75,4 +75,5 @@ jobs:
         cat ./inventory.yml
         echo $ANSIBLE_HOST_KEY_CHECKING
         cat /home/runner/.ssh/ecdsa_ansible.pub
-        
+        sleep 120
+        ansible-playbook -v -i ./inventory.yml main.yml
