@@ -1,0 +1,24 @@
+name: tfsec
+
+on:
+  push:
+    branches:
+      - iac
+  pull_request:
+  workflow_run:
+    workflows: ["ansible-lint"]
+    types:
+      - completed
+      
+permissions: read-all
+
+jobs:
+  tfsec:
+      runs-on: ubuntu-latest
+      steps:
+    
+      - name : Check out Git Repository
+        uses: actions/checkout@v2
+      
+      - name: Run Tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
