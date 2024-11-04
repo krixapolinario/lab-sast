@@ -1,0 +1,11 @@
+---
+- name: Configure Server and Application
+  hosts: all
+  become: true
+
+  tasks:
+  - ansible.builtin.debug:
+      msg: Hostname {{ inventory_hostname }} and Distribution {{ ansible_distribution }} and System {{ ansible_facts['system'] }}
+
+  - ansible.builtin.include_tasks: "config-server-{{ ansible_distribution | lower }}.yml"
+    when: ansible_facts['system'] == 'Linux'

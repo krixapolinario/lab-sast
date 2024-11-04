@@ -62,16 +62,12 @@ jobs:
         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
         TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
-    - name: Setup SSH 
+    - name: Run Ansible Playbook 
       shell: bash
+      working-directory: ./ansible
       run: |
         pwd
         ls -la
         cat ./inventory.yml
-        sleep 60
-    
-    - name: Terraform Destroy
-      run: terraform destroy -auto-approve -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+        sleep 120
+        ansible-playbook -vvv --private-key /home/runner/.ssh/ecdsa_ansible -u ansible -i ./inventory.yml main.yml
