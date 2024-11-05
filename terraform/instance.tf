@@ -13,7 +13,7 @@ resource "google_compute_instance" "lab-sast" {
     access_config {}
   }
 
-  tags = ["http-server", "https-server"]
+  tags = ["http-server", "https-server", "ssh"]
 
   boot_disk {
     initialize_params {
