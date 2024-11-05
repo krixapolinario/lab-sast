@@ -32,8 +32,3 @@ variable "ssh_key_pub" {
   description = "Path Public SSH Key for Ansible User"
   type        = string
 }
-
-variable "ssh_key_priv" {
-  description = "Path Private SSH Key for Ansible User"
-  type        = string
-}
