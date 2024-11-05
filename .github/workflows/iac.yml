@@ -3,7 +3,7 @@ name: IaC
 on:
   push:
     branches:
-      - iac
+      - main
 
 permissions:
   contents: read
