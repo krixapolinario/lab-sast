@@ -21,6 +21,7 @@
   ansible.builtin.dnf:
     name:
       - yum-utils
+      - python3-pip
     state: present
 
 - name: install dependences by pip
