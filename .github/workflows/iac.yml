@@ -136,4 +136,4 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
-          ansible-playbook -vvv -i ./inventory.yml main.yml
+          ansible-playbook -i ./inventory.yml main.yml

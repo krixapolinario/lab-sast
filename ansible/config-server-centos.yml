@@ -20,7 +20,7 @@
 - name: install dependences by dnf
   ansible.builtin.dnf:
     name:
-      - yum-utils-4.0.21-23.el8
+      - yum-utils
     state: present
 
 - name: install dependences by pip
