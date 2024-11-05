@@ -63,6 +63,8 @@ jobs:
       run:
         shell: bash
         working-directory: ./terraform
+    outputs:
+      instance_nat_ip: ${{ steps.instance_inventory.outputs.instance_nat_ip }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,7 +74,7 @@ jobs:
           eval `ssh-agent -s`
           mkdir -p /home/runner/.ssh/
           touch /home/runner/.ssh/ecdsa_ansible.pub
-          echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible.pub
+          echo -e "${{ secrets.ANSIBLE_SSH_PUB }}" > /home/runner/.ssh/ecdsa_ansible.pub
           chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -97,6 +99,7 @@ jobs:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
           TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
       - name: Terraform Output
+        id: instance_inventory
         run: echo "instance_nat_ip=$(terraform output instance_nat_ip)" >> "$GITHUB_OUTPUT"
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
@@ -121,14 +124,14 @@ jobs:
           eval `ssh-agent -s`
           mkdir -p /home/runner/.ssh/
           touch /home/runner/.ssh/ecdsa_ansible
-          echo -e "${{secrets.ANSIBLE_SSH}}" > /home/runner/.ssh/ecdsa_ansible
+          echo -e "${{ secrets.ANSIBLE_SSH }}" > /home/runner/.ssh/ecdsa_ansible
           chmod 700 /home/runner/.ssh/ecdsa_ansible
       - name: Create Ansible Inventory
         run: |
           echo "lab-sast ansible_port=22 ansible_host=${INSTANCE_NAT_IP} ansible_user=ansible ansible_ssh_private_key_file=/home/runner/.ssh/ecdsa_ansible" >> ./inventory.yml
           cat ./inventory.yml
         env:
-          INSTANCE_NAT_IP: ${{needs.terraform.outputs.instance_nat_ip}}
+          INSTANCE_NAT_IP: ${{ needs.terraform.outputs.instance_nat_ip }}
       - name: Run Ansible Playbook 
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
