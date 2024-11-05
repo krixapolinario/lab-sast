@@ -4,9 +4,6 @@
   become: true
   gather_facts: false
 
-  vars:
-    interpreter_python: auto_silent
-
   tasks:
     - name: Wait for server to boot
       ansible.builtin.wait_for_connection:
