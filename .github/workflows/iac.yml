@@ -97,7 +97,7 @@ jobs:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
           TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
       - name: Terraform Output
-        run: echo $(terraform output instance_nat_ip) >> "$GITHUB_OUTPUT"
+        run: echo $(terraform output instance_nat_ip)
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
           TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
