@@ -62,65 +62,72 @@ jobs:
         shell: bash
         working-directory: ./terraform
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Setup SSH 
-      shell: bash
-      run: |
-        eval `ssh-agent -s`
-        mkdir -p /home/runner/.ssh/
-        touch /home/runner/.ssh/ecdsa_ansible /home/runner/.ssh/ecdsa_ansible.pub
-        echo -e "${{secrets.ANSIBLE_SSH}}" > /home/runner/.ssh/ecdsa_ansible
-        echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible.pub
-        chmod 700 /home/runner/.ssh/ecdsa_ansible
-        chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup SSH 
+        shell: bash
+        run: |
+          eval `ssh-agent -s`
+          mkdir -p /home/runner/.ssh/
+          touch /home/runner/.ssh/ecdsa_ansible.pub
+          echo -e "${{secrets.ANSIBLE_SSH_PUB}}" > /home/runner/.ssh/ecdsa_ansible.pub
+          chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Validate
+        run: terraform validate
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Plan
+        run: terraform plan -input=false
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Output
+        run: echo $(terraform output instance_nat_ip) >> "$GITHUB_OUTPUT"
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-
-    - name: Terraform Init
-      run: terraform init
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
-    
-    - name: Terraform Validate
-      run: terraform validate
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
-
-    - name: Terraform Plan
-      run: terraform plan -input=false
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
-
-  #   - name: Terraform Apply
-  #     run: terraform apply -auto-approve -input=false
-  #     env:
-  #       GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
-  #       TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
-
-  # # ansible:
-  # #   name: Ansible
-  # #   runs-on: ubuntu-latest
-  # #   environment: production
-
-  # #   defaults:
-  # #     run:
-  # #       shell: bash
-  # #       working-directory: ./ansible
-
-  # #   steps:
-  # #   - name: Checkout
-  # #     uses: actions/checkout@v4
-
-  #   - name: Run Ansible Playbook 
-  #     shell: bash
-  #     working-directory: ./ansible
-  #     env:
-  #       ANSIBLE_HOST_KEY_CHECKING: False
-  #     run: |
-  #       sleep 120
-  #       ansible-playbook -vvv -i ./inventory.yml main.yml
+  ansible:
+    name: Ansible
+    runs-on: ubuntu-latest
+    environment: production
+    needs: 
+      - terraform
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./ansible
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup SSH 
+        shell: bash
+        run: |
+          eval `ssh-agent -s`
+          mkdir -p /home/runner/.ssh/
+          touch /home/runner/.ssh/ecdsa_ansible
+          echo -e "${{secrets.ANSIBLE_SSH}}" > /home/runner/.ssh/ecdsa_ansible
+          chmod 700 /home/runner/.ssh/ecdsa_ansible
+      - name: Create Ansible Inventory
+        run: |
+          echo 'lab-sast ansible_port=22 ansible_host=${needs.terraform.outputs.instance_nat_ip} ansible_user=ansible ansible_ssh_private_key_file=/home/runner/.ssh/ecdsa_ansible' >> ./inventory.yml
+          cat ./inventory.yml
+      - name: Run Ansible Playbook 
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: |
+          sleep 120
+          ansible-playbook -vvv -i ./inventory.yml main.yml

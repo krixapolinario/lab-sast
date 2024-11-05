@@ -21,8 +21,8 @@ resource "google_compute_instance" "lab-sast" {
     }
   }
 
-  provisioner "local-exec" {
-    command = "echo 'lab-sast ansible_port=22 ansible_host=${self.network_interface[0].access_config[0].nat_ip} ansible_user=ansible ansible_ssh_private_key_file=${var.ssh_key_priv}' >> ../ansible/inventory.yml"
-  }
+}
 
+output "instance_nat_ip" {
+  value = google_compute_instance.lab-sast.network_interface[0].access_config[0].nat_ip
 }
