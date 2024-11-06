@@ -49,7 +49,7 @@ jobs:
       - name: Run Tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
         with:
-          exclude: google-compute-no-public-ip
+          additional_args: --exclude google-compute-no-public-ip
   
   sonarcloud:
     name: SonarCloud
